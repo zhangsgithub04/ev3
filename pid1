@@ -1,6 +1,7 @@
 # Import needed classes from the dev3dev2
 # The code is for illustration purpose, not fully debugged. 
 # We will try to debugg it together. 
+# https://ev3dev-lang.readthedocs.io/projects/python-ev3dev/en/stable/motors.html
 
 import ev3dev.ev3 as ev3  #may need to use ev3dev2 ??? 
 from time import sleep
@@ -59,16 +60,19 @@ class SZLineFollower:
             # u positive: too bright, turn right
             # u negative: too dark,   turn left
 
-            # run motors, which could be further refactored! 
+            # run motors 
 
             if u > 0:
-                lm.run_timed(time_sp=self.dt, speed_sp=self.speed + u, stop_action=stop_action)
-                rm.run_timed(time_sp=self.dt, speed_sp=self.speed - u, stop_action=stop_action)
-                ev3.Leds.set_color(ev3.Leds.RIGHT, ev3.Leds.GREEN)
+                lmspeed=self.speed+u
+                rmspeed=self.speed-u
+                side=ev3.Leds.RIGHT
             elif u<0 :
-                lm.run_timed(time_sp=self.dt, speed_sp=self.speed - u, stop_action=stop_action)
-                rm.run_timed(time_sp=self.dt, speed_sp=self.speed + u, stop_action=stop_action)   
-                ev3.Leds.set_color(ev3.Leds.LEFT, ev3.Leds.GREEN)
+                lmspeed=self.speed-u
+                rmspeed=self.speed+u
+                side=ev3.Leds.LEFT
+            lm.run_timed(time_sp=self.dt, speed_sp=self.speed - u, stop_action='coast')
+            rm.run_timed(time_sp=self.dt, speed_sp=self.speed + u, stop_action='coast')   
+            ev3.Leds.set_color(side, ev3.Leds.GREEN)
 
             previous_error = error            
             sleep(dt/1000.0) #in second
